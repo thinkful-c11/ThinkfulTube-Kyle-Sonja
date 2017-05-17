@@ -37,22 +37,32 @@ function getItems(response,appState){
 function renderThumbs(appState, element){
 	let thumbnails = appState.resultThumbnails;
 	let items = appState.resultItems;
-	let html = `<div class="results">`;
-/* Make the images clickable, leading the user to the YouTube video, on YouTube
+	let html = `<div class="results">
+				<a href="#_"class="lightbox" id="hiddenbox"><iframe src=""> </iframe></a>`;
+	
+	/* Make the images clickable, leading the user to the YouTube video, on YouTube
 	for(let i=0; i < thumbnails.length; i++){
 		html+=`<span class ="pic"><a href="https://www.youtube.com/watch?v=${items[i].id.videoId}">
 		<img id = ${i} src=${thumbnails[i]} alt="${appState.search}_${i}"></a></span>`;
 	}
 */
 	for(let i=0; i < thumbnails.length; i++){
-		html+=`<span class ="pic"><a href="https://www.youtube.com/embed/${items[i].id.videoId}">
-		<img id = ${i} src=${thumbnails[i]} alt="${appState.search}_${i}"></a></span>`;
+		html+=`<span class="pic"><a href="#hiddenbox"><img id=${i} src=${thumbnails[i]} alt="${appState.search}_${i}"></a></span>`;
+		// <span class="pic"><a href="#_" class="lightbox" id="img${i}"><iframe src="https://www.youtube.com/embed/${items[i].id.videoId}" width=300px>
+		// </iframe></a></span>`;
 	}
 	html += `</div>`;
 	element.html(html);
 	element.removeClass('hidden');
 }
-function render(response){
+
+function renderIFrame(appState, img, iframe){
+	const id = img.attr("id");
+	const source = `https://www.youtube.com/embed/${appState.resultItems[id].id.videoId}`;
+	iframe.attr("src", source);
+}
+
+function callback(response){
 	console.log(response);
 	resetState(appState);
 	getItems(response,appState);
@@ -70,7 +80,14 @@ function addListeners(){
 	$('form').on('submit', function(event){
 		event.preventDefault();
 		appState.search = $('#search-youtube').val();
-		getJsonElement(appState.search, render);
+		getJsonElement(appState.search, callback);
+	});
+
+	$('div.thumbnails').on('click', 'img', function(event){
+		//event.preventDefault();
+		renderIFrame(appState, $(this), $(this).closest('.results').find('iframe'));
+
+
 	});
 
 }
