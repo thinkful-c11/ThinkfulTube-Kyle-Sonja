@@ -1,16 +1,33 @@
+*{
+    box-sizing: border-box;
+}
+
+
+/*header*/
 header{
     text-align:center;
 }
+
+/*main*/
 main{
     text-align:center;
     padding-bottom: 20px;
 }
+
+/*results*/
 .thumbnails{
     border:1px solid gray;
     width:75%;
- /*   height:100px;*/
     margin-left:auto;
     margin-right:auto;
+}
+.results{
+    text-align:center;
+    padding:5px;
+}
+.pic{
+    padding:5px;
+    display:inline-block;
 }
 .hidden{
     display:none;

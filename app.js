@@ -1,5 +1,6 @@
 const appState = {
     resultThumbnails: [],
+	search: "",
 }
 const urlYoutube ="https://www.googleapis.com/youtube/v3/search";
 function getJsonElement(searchTerm,callback ){
@@ -11,16 +12,14 @@ function getJsonElement(searchTerm,callback ){
     $.getJSON(urlYoutube,query,callback);
 }
 
-const search = "cats";
-
-function storeThumbs(appState, thumbs){
-	thumbs.forEach(thumb => appState.resultThumbnails.push(thumb));
-	
+// const search = "cats";
+function resetState(appState){
+	appState.resultThumbnails = [];
+	// appState.search="";
 }
-
-function getThumbs(response){
+function getThumbs(response,appState){
 	console.log("yo i did something");
-	const urls = response.items.map(el=>(el.snippet.thumbnails.medium.url));
+	const urls = response.items.map(el=>appState.resultThumbnails.push(el.snippet.thumbnails.medium.url));
 	console.log(appState.resultThumbnails);
 	return urls;
 }
@@ -29,33 +28,38 @@ function renderThumbs(appState, element){
 	let thumbnails = appState.resultThumbnails;
 	console.log(appState.resultThumbnails);
 
-	let html = `<ul>`;
+	let html = `<div class="results">`;
 
 	for(let i=0; i < thumbnails.length; i++){
 		console.log(thumbnails[i]);
-		html+=`<li><img src=${thumbnails[i]} alt="cat_${i}"></li>`;
+		console.log(appState.search+"hi");
+		html+=`<span class ="pic"><img id = ${i} src=${thumbnails[i]} alt="${appState.search}_${i}"></span>`;
 	}
 
 	// html+= (thumbnails.forEach(thumb =>
 	// 	`<li><img src=${thumb} alt="cat"></li>`)).join();
 
-	html += `</ul>`;
+	html += `</div>`;
 	console.log(html);
 	element.html(html);
 	element.removeClass('hidden');
 }
-
+function render(response){
+	resetState(appState);
+	getThumbs(response, appState);
+	renderThumbs(appState,$('.thumbnails'));
+}
 
 
 function addListeners(){
 
 	$('form').on('submit', function(event){
 		event.preventDefault();
-		const search = $('#search-youtube').val();
-		console.log(search);
-		getJsonElement(search, getThumbs);
+		appState.search = $('#search-youtube').val();
+		console.log(appState.search);
+		getJsonElement(appState.search, render);
 		console.log(appState.resultThumbnails);
-		renderThumbs(appState, $('.thumbnails'));
+
 	});
 
 }
