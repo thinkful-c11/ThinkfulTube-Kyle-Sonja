@@ -86,8 +86,6 @@ function addListeners(){
 	$('div.thumbnails').on('click', 'img', function(event){
 		//event.preventDefault();
 		renderIFrame(appState, $(this), $(this).closest('.results').find('iframe'));
-
-
 	});
 
 }
