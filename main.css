@@ -8,7 +8,7 @@ main{
 .thumbnails{
     border:1px solid gray;
     width:75%;
-    height:100px;
+ /*   height:100px;*/
     margin-left:auto;
     margin-right:auto;
 }
