@@ -1,0 +1,17 @@
+header{
+    text-align:center;
+}
+main{
+    text-align:center;
+    padding-bottom: 20px;
+}
+.thumbnails{
+    border:1px solid gray;
+    width:75%;
+    height:100px;
+    margin-left:auto;
+    margin-right:auto;
+}
+.hidden{
+    display:none;
+}
