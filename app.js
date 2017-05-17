@@ -1,4 +1,5 @@
 const appState = {
+	resultItems: [],
     resultThumbnails: [],
 	search: "",
 }
@@ -8,58 +9,68 @@ function getJsonElement(searchTerm,callback ){
         part:'snippet',
         key: 'AIzaSyBJaTa4o4ogOUb44z5YIoA6h692_IXy-js',
         q: searchTerm,
+		maxResults:12,
+		type:"video",
     }
     $.getJSON(urlYoutube,query,callback);
 }
 
-// const search = "cats";
+///////////////////////////////////////////////////////////////////////
+//////////        State Modification      /////////////////////////////
+///////////////////////////////////////////////////////////////////
 function resetState(appState){
 	appState.resultThumbnails = [];
+	appState.resultItems = [];
 	// appState.search="";
 }
-function getThumbs(response,appState){
-	console.log("yo i did something");
-	const urls = response.items.map(el=>appState.resultThumbnails.push(el.snippet.thumbnails.medium.url));
-	console.log(appState.resultThumbnails);
-	return urls;
+// .snippet.thumbnails.medium.url
+function getThumbs(appState){
+	return appState.resultItems.map(el=>appState.resultThumbnails.push(el.snippet.thumbnails.medium.url));
+}
+function getItems(response,appState){
+	return response.items.map(el=>appState.resultItems.push(el));
 }
 
+///////////////////////////////////////////////////////////////////////
+//////////       Render              //////////////////////////////////
+///////////////////////////////////////////////////////////////////
 function renderThumbs(appState, element){
 	let thumbnails = appState.resultThumbnails;
-	console.log(appState.resultThumbnails);
-
+	let items = appState.resultItems;
 	let html = `<div class="results">`;
-
+/* Make the images clickable, leading the user to the YouTube video, on YouTube
 	for(let i=0; i < thumbnails.length; i++){
-		console.log(thumbnails[i]);
-		console.log(appState.search+"hi");
-		html+=`<span class ="pic"><img id = ${i} src=${thumbnails[i]} alt="${appState.search}_${i}"></span>`;
+		html+=`<span class ="pic"><a href="https://www.youtube.com/watch?v=${items[i].id.videoId}">
+		<img id = ${i} src=${thumbnails[i]} alt="${appState.search}_${i}"></a></span>`;
 	}
-
-	// html+= (thumbnails.forEach(thumb =>
-	// 	`<li><img src=${thumb} alt="cat"></li>`)).join();
-
+*/
+	for(let i=0; i < thumbnails.length; i++){
+		html+=`<span class ="pic"><a href="https://www.youtube.com/embed/${items[i].id.videoId}">
+		<img id = ${i} src=${thumbnails[i]} alt="${appState.search}_${i}"></a></span>`;
+	}
 	html += `</div>`;
-	console.log(html);
 	element.html(html);
 	element.removeClass('hidden');
 }
 function render(response){
+	console.log(response);
 	resetState(appState);
-	getThumbs(response, appState);
+	getItems(response,appState);
+	getThumbs(appState);
 	renderThumbs(appState,$('.thumbnails'));
 }
 
+
+///////////////////////////////////////////////////////////////////////
+//////////        Event Listeners      //////////////////////////////////
+///////////////////////////////////////////////////////////////////
 
 function addListeners(){
 
 	$('form').on('submit', function(event){
 		event.preventDefault();
 		appState.search = $('#search-youtube').val();
-		console.log(appState.search);
 		getJsonElement(appState.search, render);
-		console.log(appState.resultThumbnails);
-
 	});
 
 }
